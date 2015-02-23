@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (C) 2015 BMW Car IT GmbH
 #
@@ -75,7 +75,7 @@ class RegexMatcher:
             # treat as 'contains'
             self.pattern = yaml_tree
         elif type(yaml_tree) is dict:
-            for key, value in yaml_tree.iteritems():
+            for key, value in yaml_tree.items():
                 if key == self.KEY_CONTAINS:
                     self.negate = False
                 elif key == self.KEY_NOT_CONTAINS:
@@ -128,7 +128,7 @@ class TestStep:
         self.timeout = 0
         self.validators = []
 
-        for key, value in yaml_tree.iteritems():
+        for key, value in yaml_tree.items():
             if key == self.KEY_NAME:
                 self.name = value
             elif key == self.KEY_COMMAND:
@@ -189,7 +189,7 @@ def create_step(yaml_tree, name, shared_steps):
                 (KEY_TESTCASE, name, TestStep.KEY, yaml_tree))
         return shared_steps[yaml_tree]
     elif type(yaml_tree) is dict:
-        for key, value in yaml_tree.iteritems():
+        for key, value in yaml_tree.items():
             if key != TestStep.KEY:
                 raise ParseException("%s '%s': unexpected token '%s'" %
                                      (KEY_TESTCASE, name, key))
@@ -208,7 +208,7 @@ class TestCase:
         self.name = None
         self.steps = None
 
-        for key, value in yaml_tree.iteritems():
+        for key, value in yaml_tree.items():
             if key == self.KEY_NAME:
                 self.name = value
             elif key == self.KEY_STEPS:
@@ -270,14 +270,14 @@ def main():
     try:
         # first find all shared test steps
         for item in testspec:
-            for key, value in item.iteritems():
+            for key, value in item.items():
                 if key == TestStep.KEY:
                     new_step = TestStep(value)
                     steps[new_step.name] = new_step
 
         # now we can parse all test cases
         for item in testspec:
-            for key, value in item.iteritems():
+            for key, value in item.items():
                 if key == KEY_TESTCASE:
                     new_case = TestCase(value, steps)
                     cases.append(new_case)
