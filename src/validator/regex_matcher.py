@@ -14,7 +14,10 @@
 # limitations under the License.
 #
 
+import re
+
 from exception import ParseException
+from output.terminal import print_expectation
 
 
 class RegexMatcher:
@@ -40,3 +43,21 @@ class RegexMatcher:
                     raise ParseException("unexpected token '%s'" % key)
         else:
             raise ParseException("stream validator must be string or list")
+
+    def validate(self, stream, type):
+        result = re.search(self.pattern, stream)
+
+        if self.negate:
+            # must not match
+            if result is not None:
+                # found a match
+                print_expectation("%s does not contain" %
+                                  type, self.pattern, stream)
+                return False
+        else:
+            if result is None:
+                # found no match but expected one
+                print_expectation("%s contains" % type, self.pattern, stream)
+                return False
+
+        return True
