@@ -17,7 +17,9 @@
 import datetime
 import os
 import signal
-from subprocess import Popen, PIPE, TimeoutExpired
+from threading import Thread
+import time
+from subprocess import Popen, PIPE
 
 import psutil
 
@@ -48,6 +50,7 @@ class TestStep:
         self.validators = []
 
         self.failed = False
+        self.abort_timeout = False
 
         for key, value in yaml_tree.items():
             if key == self.KEY_NAME:
@@ -75,7 +78,7 @@ class TestStep:
                                          "must be an integer" %
                                          (self.KEY, self.name,
                                           self.KEY_TIMEOUT, value))
-                self.fatal = yaml_tree[self.KEY_TIMEOUT]
+                self.timeout = yaml_tree[self.KEY_TIMEOUT]
             else:
                 raise ParseException("%s (%s): Unknown token '%s'" % (
                     self.KEY, self.name, key))
@@ -84,20 +87,43 @@ class TestStep:
         needs_token(self.name, self.KEY, self.KEY_NAME, self.name)
         needs_token(self.command, self.KEY, self.KEY_COMMAND, self.name)
 
-    def execute(self):
-        stdout = b''
-        stderr = b''
-
-        process = Popen(self.command, stdout=PIPE, stderr=PIPE, shell=True)
+    def process_timeout(self, process):
         try:
-            stdout, stderr = process.communicate(timeout=0.5)
-        except TimeoutExpired:
+            start = datetime.datetime.now()
+
+            while duration(start) < self.timeout:
+                # when abort is signaled there is no need to kill
+                # anything anymore
+                if self.abort_timeout:
+                    return
+
+                time.sleep(0.001)
+
             parent = psutil.Process(process.pid)
             for child in parent.children(recursive=True):
                 os.kill(child.pid, signal.SIGKILL)
-            os.kill(parent.pid, signal.SIGKILL)
+                os.kill(parent.pid, signal.SIGKILL)
+        except:
+            pass
 
+    def execute(self):
+        process = Popen(self.command, stdout=PIPE, stderr=PIPE, shell=True)
+
+        # if a timeout was specified start a thread which kills the process
+        # tree if it's still running after the timeout
+        kill_thread = None
+        if self.timeout > 0:
+            self.abort_timeout = False
+            kill_thread = Thread(target=self.process_timeout, args=(process,))
+            kill_thread.start()
+
+        stdout, stderr = process.communicate()
         exitcode = process.wait()
+
+        # if the timeout thread is still there we have to stop it
+        if kill_thread is not None:
+            self.abort_timeout = True
+            kill_thread.join()
 
         success = True
         for validator in self.validators:

@@ -34,10 +34,9 @@
             sleep 20
             echo after sleep
 
-        exit: 0
-        stderr: '^(bar|)foo'
-        stdout: EXPECTATION
+        exit: -9
         fatal: true
+        timeout: 1000
     - teststep:
         name: step2
         command: echo test 1>&2
