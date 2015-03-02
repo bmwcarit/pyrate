@@ -22,6 +22,7 @@ import yaml
 import time
 import argparse
 
+from validator.base import BaseValidator
 from output.terminal import *
 
 
@@ -50,12 +51,6 @@ def needs_token(field, item, token, name=None):
 def duration(start):
     diff = datetime.datetime.now() - start
     return diff.total_seconds() * 1000
-
-
-class BaseValidator:
-
-    def validate(self, exit, stdout, stderr):
-        raise Exception("Base method not implemented")
 
 
 class RegexMatcher:

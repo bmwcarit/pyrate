@@ -22,3 +22,15 @@ STATUS_RUN = colored('[  RUN     ]', 'green')
 STATUS_OK = colored('[      OK  ]', 'green')
 STATUS_PASSED = colored('[  PASSED  ]', 'green')
 STATUS_FAILED = colored('[  FAILED  ]', 'red')
+
+
+def print_expectation(type, expected, found):
+
+    print(colored("\n\tExpected (%s):" % type, attrs=['bold']))
+    for line in expected.splitlines():
+        print(colored("\t%s" % line, 'green'))
+
+    print(colored("\n\tGot:", attrs=['bold']))
+    for line in found.splitlines():
+        print(colored("\t%s" % line, 'red'))
+    print()
