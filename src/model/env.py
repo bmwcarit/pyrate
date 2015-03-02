@@ -14,11 +14,20 @@
 # limitations under the License.
 #
 
-import sys
+from exception import ParseException
+
+KEY = 'env'
 
 
-class BaseValidator:
+def parse_env(yaml_tree):
 
-    def validate(self, exitcode, stdout, stderr, variables):
-        print("Base method not implemented", file=sys.stderr)
-        return False
+    variables = {}
+
+    if type(yaml_tree) is not dict:
+        raise ParseException("env must be a dict")
+
+    # make sure the resulting dict is a string -> string mapping
+    for key, value in yaml_tree.items():
+        variables[str(key)] = str(value)
+
+    return variables

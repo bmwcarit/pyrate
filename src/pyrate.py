@@ -23,6 +23,7 @@ import argparse
 import yaml
 
 from exception import ParseException
+from model import env
 from model.testcase import TestCase
 from model.teststep import TestStep
 from output.terminal import *
@@ -62,6 +63,7 @@ def main():
 
     steps = {}
     cases = []
+    variables = {}
 
     try:
         # first find all shared test steps
@@ -79,6 +81,8 @@ def main():
                     cases.append(new_case)
                 elif key == TestStep.KEY:
                     pass
+                elif key == env.KEY:
+                    variables = env.parse_env(value)
                 else:
                     raise ParseException("unexpected token '%s'" % key)
     except ParseException as e:
@@ -93,7 +97,7 @@ def main():
 
     summary = TestSummary()
     for testcase in cases:
-        if not testcase.run(summary):
+        if not testcase.run(summary, variables):
             # break on fatal failure
             break
 

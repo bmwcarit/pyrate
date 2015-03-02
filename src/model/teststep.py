@@ -106,8 +106,10 @@ class TestStep:
         except:
             pass
 
-    def execute(self):
-        process = Popen(self.command, stdout=PIPE, stderr=PIPE, shell=True)
+    def execute(self, variables):
+        command = self.command.format(**variables)
+
+        process = Popen(command, stdout=PIPE, stderr=PIPE, shell=True)
 
         # if a timeout was specified start a thread which kills the process
         # tree if it's still running after the timeout
@@ -129,12 +131,13 @@ class TestStep:
         for validator in self.validators:
             if not validator.validate(exitcode,
                                       stdout.decode("utf-8"),
-                                      stderr.decode("utf-8")):
+                                      stderr.decode("utf-8"),
+                                      variables):
                 success = False
 
         return success
 
-    def run(self, testcase, summary):
+    def run(self, testcase, summary, variables):
         start = datetime.datetime.now()
 
         summary.start_test_step()
@@ -142,7 +145,7 @@ class TestStep:
         print("%s %s: %s" % (STATUS_RUN, testcase.name, self.name))
 
         status = STATUS_OK
-        if not self.execute():
+        if not self.execute(variables):
             status = STATUS_FAILED
             self.failed = True
 

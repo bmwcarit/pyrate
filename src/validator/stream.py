@@ -32,7 +32,7 @@ class StreamValidator(BaseValidator):
         else:
             raise ParseException("%s must be string or list" % stream)
 
-    def validate(self, exitcode, stdout, stderr):
+    def validate(self, exitcode, stdout, stderr, variables):
         stream = ''
         if self.stream == 'stdout':
             stream = stdout
@@ -43,7 +43,7 @@ class StreamValidator(BaseValidator):
 
         validation_result = True
         for validator in self.validators:
-            result = validator.validate(stream, self.stream)
+            result = validator.validate(stream, self.stream, variables)
 
             # The total validation result is True if each result succeeded.
             # Don't abort on the first failure so we can see other failures

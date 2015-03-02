@@ -1,3 +1,4 @@
+#!/usr/bin/env pyrate
 #
 # Copyright (C) 2015 BMW Car IT GmbH
 #
@@ -14,13 +15,21 @@
 # limitations under the License.
 #
 
+- env:
+    GLOBAL_FOO: /opt/backup
+
 - teststep:
-    command: echo "resetting test"
-    name: reset
+    name: global variable
+    command: 'echo "Basedir is: {GLOBAL_FOO}"'
+    stdout:
+    - contains: "Basedir is: /opt/backup"
+    - contains: "Basedir is: {GLOBAL_FOO}"
+
 - teststep:
     name: teststep
     command: echo shared step
     exit: SUCCESS
+
 - testcase:
     name: first
     fatal: true
@@ -32,28 +41,31 @@
             #!/bin/bash
             echo sleep
             sleep 20
-            echo after sleep
+            echo "afterfoo sleep" 1>&2
 
         exit: -9
         fatal: true
         timeout: 1000
+
     - teststep:
         name: step2
-        command: echo test 1>&2
+        command: echo barfoo 1>&2
         exit: 0
-        stderr: test
+        stderr: '^(bar|after)foo'
         stdout: ''
-        timeout: 5000
+
 - testcase:
     name: second
     steps:
-    - reset
+    - global variable
     - teststep:
         name: step1 of case second
-        command: echo test
-        exit: not 0
-        stderr:
-        - contains: 'foo'
-        - notcontains: 'blubb'
-        - contains: '^.*asdfasd.*$'
+        command: echo bar && false
+        exit: 1
+        stdout:
+        - notcontains: 'foo'
+
+        # this matches the whole string
+        - contains: '^bar$'
+        - notcontains: 'bl[ua]bb'
         - notcontains: 'bl[ua]bb'

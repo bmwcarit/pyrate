@@ -80,7 +80,7 @@ class TestCase:
         needs_token(self.name, self.KEY, self.KEY_NAME, self.name)
         needs_token(self.steps, self.KEY, self.KEY_STEPS, self.name)
 
-    def run(self, summary):
+    def run(self, summary, variables):
         start = datetime.datetime.now()
         print("%s %s" % (STATUS_SEP, self.name))
 
@@ -88,7 +88,7 @@ class TestCase:
 
         for step in self.steps:
             # run returns false if a fatal test step failed
-            if not step.run(self, summary):
+            if not step.run(self, summary, variables):
                 break
 
         print("%s %s : %d tests (%d ms total)\n" %
