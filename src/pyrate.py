@@ -23,6 +23,7 @@ import time
 import argparse
 
 from exception import ParseException
+from model.common import needs_token
 from validator.exitcode import ExitCodeValidator
 from validator.stream import StreamValidator
 from output.terminal import *
@@ -31,15 +32,6 @@ from output.terminal import *
 __version__ = "0.1"
 
 KEY_TESTCASE = 'testcase'
-
-
-def needs_token(field, item, token, name=None):
-    if field is None:
-        if name is None:
-            message = "%s needs a %s" % (item, token)
-        else:
-            message = "%s '%s' needs %s" % (item, name, token)
-        raise ParseException(message)
 
 
 def duration(start):
