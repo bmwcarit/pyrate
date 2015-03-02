@@ -23,6 +23,7 @@ import time
 import argparse
 
 from exception import ParseException
+from util import duration
 from model.common import needs_token
 from validator.exitcode import ExitCodeValidator
 from validator.stream import StreamValidator
@@ -32,11 +33,6 @@ from output.terminal import *
 __version__ = "0.1"
 
 KEY_TESTCASE = 'testcase'
-
-
-def duration(start):
-    diff = datetime.datetime.now() - start
-    return diff.total_seconds() * 1000
 
 
 class TestStep:
