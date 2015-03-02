@@ -22,6 +22,7 @@ import yaml
 import time
 import argparse
 
+from exception import ParseException
 from validator.base import BaseValidator
 from output.terminal import *
 
@@ -29,14 +30,6 @@ from output.terminal import *
 __version__ = "0.1"
 
 KEY_TESTCASE = 'testcase'
-
-
-class ParseException(Exception):
-    def __init__(self, message):
-        self.message = message
-
-    def __str__(self):
-        return repr(self.message)
 
 
 def needs_token(field, item, token, name=None):
