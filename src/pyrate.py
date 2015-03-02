@@ -24,6 +24,7 @@ import argparse
 
 from exception import ParseException
 from validator.base import BaseValidator
+from validator.exitcode import ExitCodeValidator
 from output.terminal import *
 
 
@@ -82,15 +83,6 @@ class StreamValidator(BaseValidator):
                 self.validators.append(RegexMatcher(item))
         else:
             raise ParseException("%s must be string or list" % stream)
-
-
-class ExitCodeValidator(BaseValidator):
-
-    def __init__(self, yaml_tree):
-        if type(yaml_tree) not in [str, int]:
-            raise ParseException("exit must be str or int (is '%s')" %
-                                 type(yaml_tree))
-        self.code = yaml_tree
 
 
 class TestStep:
