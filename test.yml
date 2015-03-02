@@ -15,7 +15,7 @@
 #
 
 - teststep:
-    command: echo resetting test
+    command: echo "resetting test"
     name: reset
 - teststep:
     name: teststep
@@ -29,9 +29,9 @@
         name: step1
         command: |
             #!/bin/bash
-            echo foo
-            echo blah
-            exit 7
+            echo sleep
+            sleep 20
+            echo after sleep
 
         exit: 0
         stderr: '^(bar|)foo'
@@ -50,7 +50,7 @@
     - reset
     - teststep:
         name: step1 of case second
-        command: ls /
+        command: echo test
         exit: not 0
         stderr:
         - contains: 'foo'

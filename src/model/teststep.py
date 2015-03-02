@@ -15,7 +15,12 @@
 #
 
 import datetime
-import time
+import os
+import signal
+from subprocess import Popen, PIPE, TimeoutExpired
+
+import psutil
+
 from exception import ParseException
 from model.common import needs_token
 from output.terminal import STATUS_RUN, STATUS_OK
@@ -78,8 +83,28 @@ class TestStep:
         needs_token(self.command, self.KEY, self.KEY_COMMAND, self.name)
 
     def execute(self):
-        # fixme implement this
-        time.sleep(0.1)
+        stdout = b''
+        stderr = b''
+
+        process = Popen(self.command, stdout=PIPE, stderr=PIPE, shell=True)
+        try:
+            stdout, stderr = process.communicate(timeout=0.5)
+        except TimeoutExpired:
+            parent = psutil.Process(process.pid)
+            for child in parent.children(recursive=True):
+                os.kill(child.pid, signal.SIGKILL)
+            os.kill(parent.pid, signal.SIGKILL)
+
+        exitcode = process.wait()
+
+        success = True
+        for validator in self.validators:
+            if not validator.validate(exitcode,
+                                      stdout.decode("utf-8"),
+                                      stderr.decode("utf-8")):
+                success = False
+
+        return success
 
     def run(self, testcase, summary):
         start = datetime.datetime.now()

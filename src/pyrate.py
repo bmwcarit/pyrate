@@ -23,10 +23,10 @@ import argparse
 import yaml
 
 from exception import ParseException
-from model.teststep import TestStep
-from util import duration
 from model.common import needs_token
+from model.teststep import TestStep
 from output.terminal import *
+from util import duration
 
 
 __version__ = "0.1"
