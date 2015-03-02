@@ -23,9 +23,8 @@ import time
 import argparse
 
 from exception import ParseException
-from validator.base import BaseValidator
 from validator.exitcode import ExitCodeValidator
-from validator.regex_matcher import RegexMatcher
+from validator.stream import StreamValidator
 from output.terminal import *
 
 
@@ -46,21 +45,6 @@ def needs_token(field, item, token, name=None):
 def duration(start):
     diff = datetime.datetime.now() - start
     return diff.total_seconds() * 1000
-
-
-class StreamValidator(BaseValidator):
-
-    def __init__(self, yaml_tree, stream):
-        self.stream = stream
-        self.validators = []
-
-        if type(yaml_tree) is str:
-            self.validators.append(RegexMatcher(yaml_tree))
-        elif type(yaml_tree) is list:
-            for item in yaml_tree:
-                self.validators.append(RegexMatcher(item))
-        else:
-            raise ParseException("%s must be string or list" % stream)
 
 
 class TestStep:
