@@ -25,6 +25,7 @@ import argparse
 from exception import ParseException
 from validator.base import BaseValidator
 from validator.exitcode import ExitCodeValidator
+from validator.regex_matcher import RegexMatcher
 from output.terminal import *
 
 
@@ -45,29 +46,6 @@ def needs_token(field, item, token, name=None):
 def duration(start):
     diff = datetime.datetime.now() - start
     return diff.total_seconds() * 1000
-
-
-class RegexMatcher:
-    KEY_CONTAINS = 'contains'
-    KEY_NOT_CONTAINS = 'notcontains'
-
-    def __init__(self, yaml_tree):
-        self.negate = False
-        self.pattern = None
-
-        if type(yaml_tree) is str:
-            # treat as 'contains'
-            self.pattern = yaml_tree
-        elif type(yaml_tree) is dict:
-            for key, value in yaml_tree.items():
-                if key == self.KEY_CONTAINS:
-                    self.negate = False
-                elif key == self.KEY_NOT_CONTAINS:
-                    self.negate = True
-                else:
-                    raise ParseException("Unexpected token '%s'" % key)
-        else:
-            raise ParseException("stream validator must be string or list")
 
 
 class StreamValidator(BaseValidator):
