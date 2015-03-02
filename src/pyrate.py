@@ -23,90 +23,13 @@ import argparse
 import yaml
 
 from exception import ParseException
-from model.common import needs_token
+from model.testcase import TestCase
 from model.teststep import TestStep
 from output.terminal import *
 from util import duration
 
 
 __version__ = "0.1"
-
-KEY_TESTCASE = 'testcase'
-
-
-def create_step(yaml_tree, name, shared_steps):
-    if type(yaml_tree) is str:
-        # the step refers to a shared step
-        if yaml_tree not in shared_steps:
-            raise ParseException(
-                "%s '%s': undefined reference to %s '%s'" %
-                (KEY_TESTCASE, name, TestStep.KEY, yaml_tree))
-        return shared_steps[yaml_tree]
-    elif type(yaml_tree) is dict:
-        for key, value in yaml_tree.items():
-            if key != TestStep.KEY:
-                raise ParseException("%s '%s': unexpected token '%s'" %
-                                     (KEY_TESTCASE, name, key))
-            return TestStep(value)
-    else:
-        raise ParseException("%s '%s': unexpected type %s" %
-                             (KEY_TESTCASE, name, type(yaml_tree)))
-
-
-class TestCase:
-    KEY = 'testcase'
-    KEY_NAME = 'name'
-    KEY_STEPS = 'steps'
-    KEY_FATAL = 'fatal'
-
-    def __init__(self, yaml_tree, shared_steps):
-        self.name = None
-        self.steps = None
-        self.fatal = False
-
-        self.failed = False
-
-        for key, value in yaml_tree.items():
-            if key == self.KEY_NAME:
-                self.name = value
-            elif key == self.KEY_STEPS:
-                self.steps = []
-                for yamlStep in value:
-                    self.steps.append(create_step(yamlStep, self.name,
-                                                  shared_steps))
-            elif key == self.KEY_FATAL:
-                if type(value) is not bool:
-                    raise ParseException("%s '%s': error parsing %s (%s) : "
-                                         "must be a bool" %
-                                         (self.KEY,
-                                          self.name,
-                                          self.KEY_FATAL,
-                                          value))
-                self.fatal = value
-            else:
-                raise ParseException("%s (%s): Unknown token '%s'" % (
-                    self.KEY, self.name, key))
-
-        needs_token(self.name, self.KEY, self.KEY_NAME, self.name)
-        needs_token(self.steps, self.KEY, self.KEY_STEPS, self.name)
-
-    def run(self, summary):
-        start = datetime.datetime.now()
-        print("%s %s" % (STATUS_SEP, self.name))
-
-        summary.start_test_case()
-
-        for step in self.steps:
-            # run returns false if a fatal test step failed
-            if not step.run(self, summary):
-                break
-
-        print("%s %s : %d tests (%d ms total)\n" %
-              (STATUS_SEP, self.name, len(self.steps), duration(start)))
-
-        # check if fatal and at least one failure
-        failed = [step for step in self.steps if step.failed]
-        return not (len(failed) > 0 and self.fatal)
 
 
 class TestSummary:
@@ -151,7 +74,7 @@ def main():
         # now we can parse all test cases
         for item in testspec:
             for key, value in item.items():
-                if key == KEY_TESTCASE:
+                if key == TestCase.KEY:
                     new_case = TestCase(value, steps)
                     cases.append(new_case)
                 elif key == TestStep.KEY:
