@@ -21,7 +21,20 @@ from validator.base import BaseValidator
 class ExitCodeValidator(BaseValidator):
 
     def __init__(self, yaml_tree):
+        self.code = 0
+        self.negate = False
+
         if type(yaml_tree) not in [str, int]:
             raise ParseException("exit must be str or int (is '%s')" %
                                  type(yaml_tree))
-        self.code = yaml_tree
+        if type(yaml_tree) is int:
+            self.code = yaml_tree
+        else:
+            if yaml_tree == "SUCCESS":
+                self.code = 0
+            elif yaml_tree == "FAIL":
+                self.code = 0
+                self.negate = True
+            else:
+                # TODO has to be parsed
+                self.code = 234234
