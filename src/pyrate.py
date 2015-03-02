@@ -154,6 +154,10 @@ def main():
                 if key == KEY_TESTCASE:
                     new_case = TestCase(value, steps)
                     cases.append(new_case)
+                elif key == TestStep.KEY:
+                    pass
+                else:
+                    raise ParseException("unexpected token '%s'" % key)
     except ParseException as e:
         print("Parse error: %s" % e, file=sys.stderr)
         sys.exit(1)
