@@ -15,6 +15,7 @@
 #
 
 from exception import ParseException
+from output.terminal import print_expectation
 from validator.base import BaseValidator
 
 
@@ -38,3 +39,15 @@ class ExitCodeValidator(BaseValidator):
             else:
                 # TODO has to be parsed
                 self.code = 234234
+
+    def validate(self, exitcode, stdout, stderr):
+        valid = exitcode == self.code
+        if self.negate:
+            valid = not valid
+
+        if not valid:
+            prefix = 'not ' if self.negate else ''
+            expectation = "%s%s" % (prefix, self.code)
+            print_expectation("exit status", expectation, "%d" % exitcode)
+
+        return valid
