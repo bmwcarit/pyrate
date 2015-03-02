@@ -23,7 +23,7 @@ import psutil
 
 from exception import ParseException
 from model.common import needs_token
-from output.terminal import STATUS_RUN, STATUS_OK
+from output.terminal import STATUS_RUN, STATUS_OK, STATUS_FAILED
 from util import duration
 from validator.exitcode import ExitCodeValidator
 from validator.stream import StreamValidator
@@ -46,6 +46,8 @@ class TestStep:
         self.fatal = False
         self.timeout = 0
         self.validators = []
+
+        self.failed = False
 
         for key, value in yaml_tree.items():
             if key == self.KEY_NAME:
@@ -113,7 +115,12 @@ class TestStep:
 
         print("%s %s: %s" % (STATUS_RUN, testcase.name, self.name))
 
-        self.execute()
+        status = STATUS_OK
+        if not self.execute():
+            status = STATUS_FAILED
+            self.failed = True
 
         print("%s %s: %s (%d ms)" %
-              (STATUS_OK, testcase.name, self.name, duration(start)))
+              (status, testcase.name, self.name, duration(start)))
+
+        return not (self.failed and self.fatal)
