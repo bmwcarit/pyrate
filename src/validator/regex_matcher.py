@@ -32,8 +32,10 @@ class RegexMatcher:
             for key, value in yaml_tree.items():
                 if key == self.KEY_CONTAINS:
                     self.negate = False
+                    self.pattern = value
                 elif key == self.KEY_NOT_CONTAINS:
                     self.negate = True
+                    self.pattern = value
                 else:
                     raise ParseException("unexpected token '%s'" % key)
         else:
