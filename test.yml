@@ -1,0 +1,59 @@
+#
+# Copyright (C) 2015 BMW Car IT GmbH
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+- teststep:
+    command: echo resetting test
+    name: reset
+- teststep:
+    name: teststep
+    command: echo shared step
+    exit: SUCCESS
+- testcase:
+    name: first
+    steps:
+    - teststep
+    - teststep:
+        name: step1
+        command: |
+            #!/bin/bash
+            echo foo
+            echo blah
+            exit 7
+
+        exit: 0
+        stderr: '^(bar|)foo'
+        stdout: EXPECTATION
+        fatal: true
+    - teststep:
+        name: step2
+        command: echo test 1>&2
+        exit: 0
+        stderr: test
+        stdout: ''
+        timeout: 5000
+- testcase:
+    name: second
+    steps:
+    - reset
+    - teststep:
+        name: step1 of case second
+        command: ls /
+        exit: not 0
+        stderr:
+        - contains: 'foo'
+        - notcontains: 'blubb'
+        - contains: '^.*asdfasd.*$'
+        - notcontains: 'bl[ua]bb'
