@@ -18,91 +18,20 @@
 from __future__ import print_function
 import sys
 import datetime
-import yaml
-import time
 import argparse
 
+import yaml
+
 from exception import ParseException
+from model.teststep import TestStep
 from util import duration
 from model.common import needs_token
-from validator.exitcode import ExitCodeValidator
-from validator.stream import StreamValidator
 from output.terminal import *
 
 
 __version__ = "0.1"
 
 KEY_TESTCASE = 'testcase'
-
-
-class TestStep:
-    KEY = 'teststep'
-    KEY_NAME = 'name'
-    KEY_COMMAND = 'command'
-    KEY_EXIT = 'exit'
-    KEY_STDOUT = 'stdout'
-    KEY_STDERR = 'stderr'
-    KEY_FATAL = 'fatal'
-    KEY_TIMEOUT = 'timeout'
-
-    def __init__(self, yaml_tree):
-        # default values
-        self.name = None
-        self.command = None
-        self.fatal = False
-        self.timeout = 0
-        self.validators = []
-
-        for key, value in yaml_tree.items():
-            if key == self.KEY_NAME:
-                self.name = value
-            elif key == self.KEY_COMMAND:
-                self.command = value
-            elif key == self.KEY_EXIT:
-                self.validators.append(ExitCodeValidator(value))
-            elif key == self.KEY_STDOUT:
-                self.validators.append(StreamValidator(value, 'stdout'))
-            elif key == self.KEY_STDERR:
-                self.validators.append(StreamValidator(value, 'stderr'))
-            elif key == self.KEY_FATAL:
-                if type(value) is not bool:
-                    raise ParseException("%s '%s': error parsing %s (%s) : "
-                                         "must be a bool" %
-                                         (self.KEY,
-                                          self.name,
-                                          self.KEY_FATAL,
-                                          value))
-                self.fatal = value
-            elif key == self.KEY_TIMEOUT:
-                if type(value) is not int:
-                    raise ParseException("%s '%s': error parsing %s (%s) : "
-                                         "must be an integer" %
-                                         (self.KEY, self.name,
-                                          self.KEY_TIMEOUT, value))
-                self.fatal = yaml_tree[self.KEY_TIMEOUT]
-            else:
-                raise ParseException("%s (%s): Unknown token '%s'" % (
-                    self.KEY, self.name, key))
-
-        # validate mandatory fields
-        needs_token(self.name, self.KEY, self.KEY_NAME, self.name)
-        needs_token(self.command, self.KEY, self.KEY_COMMAND, self.name)
-
-    def execute(self):
-        # fixme implement this
-        time.sleep(0.1)
-
-    def run(self, testcase, summary):
-        start = datetime.datetime.now()
-
-        summary.start_test_step()
-
-        print("%s %s: %s" % (STATUS_RUN, testcase.name, self.name))
-
-        self.execute()
-
-        print("%s %s: %s (%d ms)" %
-              (STATUS_OK, testcase.name, self.name, duration(start)))
 
 
 def create_step(yaml_tree, name, shared_steps):
