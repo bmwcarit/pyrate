@@ -57,10 +57,14 @@ class TestCase:
     KEY = 'testcase'
     KEY_NAME = 'name'
     KEY_STEPS = 'steps'
+    KEY_FATAL = 'fatal'
 
     def __init__(self, yaml_tree, shared_steps):
         self.name = None
         self.steps = None
+        self.fatal = False
+
+        self.failed = False
 
         for key, value in yaml_tree.items():
             if key == self.KEY_NAME:
@@ -70,6 +74,15 @@ class TestCase:
                 for yamlStep in value:
                     self.steps.append(create_step(yamlStep, self.name,
                                                   shared_steps))
+            elif key == self.KEY_FATAL:
+                if type(value) is not bool:
+                    raise ParseException("%s '%s': error parsing %s (%s) : "
+                                         "must be a bool" %
+                                         (self.KEY,
+                                          self.name,
+                                          self.KEY_FATAL,
+                                          value))
+                self.fatal = value
             else:
                 raise ParseException("%s (%s): Unknown token '%s'" % (
                     self.KEY, self.name, key))
@@ -84,10 +97,16 @@ class TestCase:
         summary.start_test_case()
 
         for step in self.steps:
-            step.run(self, summary)
+            # run returns false if a fatal test step failed
+            if not step.run(self, summary):
+                break
 
         print("%s %s : %d tests (%d ms total)\n" %
               (STATUS_SEP, self.name, len(self.steps), duration(start)))
+
+        # check if fatal and at least one failure
+        failed = [step for step in self.steps if step.failed]
+        return not (len(failed) > 0 and self.fatal)
 
 
 class TestSummary:
@@ -147,7 +166,9 @@ def main():
 
     summary = TestSummary()
     for testcase in cases:
-        testcase.run(summary)
+        if not testcase.run(summary):
+            # break on fatal failure
+            break
 
     print(STATUS_SEP)
     print("%s %d tests from %d test cases run. (%d ms total" % (

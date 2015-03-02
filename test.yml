@@ -23,6 +23,7 @@
     exit: SUCCESS
 - testcase:
     name: first
+    fatal: true
     steps:
     - teststep
     - teststep:
