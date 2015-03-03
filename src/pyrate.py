@@ -17,22 +17,17 @@
 
 from __future__ import print_function
 import sys
-from termcolor import colored
 import datetime
 import yaml
 import time
 import argparse
 
+from output.terminal import *
+
+
 __version__ = "0.1"
 
 KEY_TESTCASE = 'testcase'
-
-STATUS_SEP = colored('[----------]', 'green')
-STATUS_END = colored('[==========]', 'green')
-STATUS_RUN = colored('[  RUN     ]', 'green')
-STATUS_OK = colored('[      OK  ]', 'green')
-STATUS_PASSED = colored('[  PASSED  ]', 'green')
-STATUS_FAILED = colored('[  FAILED  ]', 'red')
 
 
 class ParseException(Exception):
