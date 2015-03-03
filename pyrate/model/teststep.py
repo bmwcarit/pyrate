@@ -29,6 +29,7 @@ from pyrate.output.terminal import STATUS_RUN, STATUS_OK, STATUS_FAILED
 from pyrate.util import duration, DefaultVariableDict
 from pyrate.validator.exitcode import ExitCodeValidator
 from pyrate.validator.stream import StreamValidator
+from pyrate.model.env import parse_env
 
 
 class TestStep:
@@ -52,6 +53,7 @@ class TestStep:
         self.failed = False
         self.abort_timeout = False
         self.executed = False
+        self.arguments = {}
 
         for key, value in yaml_tree.items():
             if key == self.KEY_NAME:
@@ -88,6 +90,9 @@ class TestStep:
         needs_token(self.name, self.KEY, self.KEY_NAME, self.name)
         needs_token(self.command, self.KEY, self.KEY_COMMAND, self.name)
 
+    def parse_args(self, yaml_tree):
+        self.arguments = parse_env(yaml_tree)
+
     def process_timeout(self, process):
         try:
             start = datetime.datetime.now()
@@ -108,7 +113,16 @@ class TestStep:
             pass
 
     def execute(self, variables):
-        command = self.command.format_map(DefaultVariableDict(**variables))
+        # merge global and step variables
+        # step variables take precedence
+        used_variables = {}
+        for key, value in variables.items():
+            used_variables[key] = value
+        for key, value in self.arguments.items():
+            used_variables[key] = value
+
+        command = self.command.format_map(
+            DefaultVariableDict(**used_variables))
 
         process = Popen(command, stdout=PIPE, stderr=PIPE, shell=True)
 
@@ -133,7 +147,7 @@ class TestStep:
             if not validator.validate(exitcode,
                                       stdout.decode("utf-8"),
                                       stderr.decode("utf-8"),
-                                      variables):
+                                      used_variables):
                 success = False
 
         return success

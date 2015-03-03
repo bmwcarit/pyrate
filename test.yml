@@ -26,15 +26,27 @@
     - contains: "Basedir is: {GLOBAL_FOO}"
 
 - teststep:
-    name: teststep
-    command: echo shared step
+    name: foostep
+    command: echo shared step with parameters {PARAM1} and {PARAM2}
     exit: SUCCESS
+    stdout:
+    - contains: '{PARAM1}'
+    - contains: '{PARAM2}'
+
+    # in this example this test step gets called with a param foo,
+    # so lets check for it
+    - contains: foo
 
 - testcase:
     name: first
     fatal: true
     steps:
-    - teststep
+    - foostep:
+        PARAM1: fo
+        PARAM2: bar
+    - foostep:
+        PARAM1: bar
+        PARAM2: bar
     - teststep:
         name: step1
         command: |

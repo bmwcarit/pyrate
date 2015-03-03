@@ -14,7 +14,9 @@
 # limitations under the License.
 #
 
+import copy
 import datetime
+
 from pyrate.exception import ParseException
 from pyrate.model.common import needs_token
 from pyrate.model.teststep import TestStep
@@ -33,6 +35,15 @@ def create_step(yaml_tree, name, shared_steps):
     elif type(yaml_tree) is dict:
         for key, value in yaml_tree.items():
             if key != TestStep.KEY:
+                # check for a shared step with argument
+                if key in shared_steps:
+
+                    # The step has to be copied. Otherwise all instances of
+                    # this step would have the same set of arguments.
+                    step = copy.deepcopy(shared_steps[key])
+                    step.parse_args(value)
+                    return step
+
                 raise ParseException("%s '%s': unexpected token '%s'" %
                                      (TestCase.KEY, name, key))
             return TestStep(value)
