@@ -18,6 +18,7 @@ import re
 
 from pyrate.exception import ParseException
 from pyrate.output.terminal import print_expectation
+from pyrate.util import DefaultVariableDict
 
 
 class RegexMatcher:
@@ -46,7 +47,7 @@ class RegexMatcher:
 
     def validate(self, stream, type, variables):
 
-        pattern = self.pattern.format(**variables)
+        pattern = self.pattern.format_map(DefaultVariableDict(**variables))
 
         result = re.search(pattern, stream)
 

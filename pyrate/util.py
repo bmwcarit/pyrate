@@ -20,3 +20,8 @@ import datetime
 def duration(start):
     diff = datetime.datetime.now() - start
     return diff.total_seconds() * 1000
+
+
+class DefaultVariableDict(dict):
+    def __missing__(self, key):
+        return '{%s}' % key
