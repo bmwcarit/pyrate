@@ -55,6 +55,7 @@ class TestCase:
         self.fatal = False
 
         self.failed = False
+        self.executed = False
 
         for key, value in yaml_tree.items():
             if key == self.KEY_NAME:
@@ -80,15 +81,14 @@ class TestCase:
         needs_token(self.name, self.KEY, self.KEY_NAME, self.name)
         needs_token(self.steps, self.KEY, self.KEY_STEPS, self.name)
 
-    def run(self, summary, variables):
+    def run(self, variables):
+        self.executed = True
         start = datetime.datetime.now()
         print("%s %s" % (STATUS_SEP, self.name))
 
-        summary.start_test_case()
-
         for step in self.steps:
             # run returns false if a fatal test step failed
-            if not step.run(self, summary, variables):
+            if not step.run(self, variables):
                 break
 
         print("%s %s : %d tests (%d ms total)\n" %

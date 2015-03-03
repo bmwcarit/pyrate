@@ -47,6 +47,10 @@
         fatal: true
         timeout: 1000
 
+        stdout: ^sleep$
+        stderr:
+        - notcontains: after
+
     - teststep:
         name: step2
         command: echo barfoo 1>&2
@@ -61,7 +65,7 @@
     - teststep:
         name: step1 of case second
         command: echo bar && false
-        exit: 1
+        exit: 0
         stdout:
         - notcontains: 'foo'
 

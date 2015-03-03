@@ -33,21 +33,6 @@ from util import duration
 __version__ = "0.1"
 
 
-class TestSummary:
-    def __init__(self):
-        self.failedTestCases = 0
-        self.failedTestSteps = 0
-        self.testCaseSummaries = []
-        self.testCasesRun = 0
-        self.testStepsRun = 0
-
-    def start_test_case(self):
-        self.testCasesRun += 1
-
-    def start_test_step(self):
-        self.testStepsRun += 1
-
-
 def main():
 
     parser = argparse.ArgumentParser()
@@ -95,18 +80,24 @@ def main():
               "Skip tests due to dry run.")
         sys.exit(0)
 
-    summary = TestSummary()
     for testcase in cases:
-        if not testcase.run(summary, variables):
+        if not testcase.run(variables):
             # break on fatal failure
             break
 
+    # gather some statistics from the test which were run
+    cases_executed = [case for case in cases if case.executed]
+    cases_failed = [case for case in cases_executed if case.failed]
+    steps_executed = [step for case in cases_executed
+                      for step in case.steps if step.executed]
+    steps_failed = [step for step in steps_executed if step.failed]
+
     print(STATUS_SEP)
     print("%s %d tests from %d test cases run. (%d ms total" % (
-        STATUS_END, summary.testStepsRun,
-        summary.testCasesRun, duration(start)))
+        STATUS_END, len(steps_executed),
+        len(cases_executed), duration(start)))
 
-    if summary.failedTestCases > 0:
+    if len(cases_failed) > 0:
         print("failed")
     else:
         print(STATUS_PASSED)

@@ -51,6 +51,7 @@ class TestStep:
 
         self.failed = False
         self.abort_timeout = False
+        self.executed = False
 
         for key, value in yaml_tree.items():
             if key == self.KEY_NAME:
@@ -137,10 +138,9 @@ class TestStep:
 
         return success
 
-    def run(self, testcase, summary, variables):
+    def run(self, testcase, variables):
+        self.executed = True
         start = datetime.datetime.now()
-
-        summary.start_test_step()
 
         print("%s %s: %s" % (STATUS_RUN, testcase.name, self.name))
 
