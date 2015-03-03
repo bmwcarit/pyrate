@@ -96,4 +96,5 @@ class TestCase:
 
         # check if fatal and at least one failure
         failed = [step for step in self.steps if step.failed]
-        return not (len(failed) > 0 and self.fatal)
+        self.failed = len(failed)
+        return not (self.failed > 0 and self.fatal)
