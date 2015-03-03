@@ -65,7 +65,7 @@
     - teststep:
         name: step1 of case second
         command: echo bar && false
-        exit: 0
+        exit: 1
         stdout:
         - notcontains: 'foo'
 

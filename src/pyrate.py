@@ -98,7 +98,24 @@ def main():
         len(cases_executed), duration(start)))
 
     if len(cases_failed) > 0:
-        print("failed")
+        message_text_cases = "case"
+        if len(cases_executed) > 1:
+            message_text_cases = "cases"
+        print("%s %d out of %d tests (%d of %d %s) failed" %
+              (STATUS_FAILED, len(steps_failed), len(steps_executed),
+               len(cases_failed), len(cases_executed), message_text_cases))
+        print(STATUS_FAILED)
+
+        message_text_cases = "case"
+        if len(cases_failed) > 1:
+            message_text_cases = "cases"
+        print("%s %d failed %s, listed below:" %
+              (STATUS_FAILED, len(cases_failed), message_text_cases))
+
+        for testcase in cases_failed:
+            print("%s %s" % (STATUS_FAILED, testcase.name))
+
+        sys.exit(1)
     else:
         print(STATUS_PASSED)
 
