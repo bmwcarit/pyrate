@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-from pyrate.pyrate import main
+from pyrate.main import main
 
 if __name__ == '__main__':
     main()
