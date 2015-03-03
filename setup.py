@@ -25,7 +25,7 @@ setup(name='pyrate',
       packages=['pyrate'],
       package_dir={'pyrate': 'src'},
       license='Apache2',
-      scripts=['pyrate'],
+      scripts=['tools/pyrate'],
       install_requires=[
           "PyYaml",
           "psutil",
