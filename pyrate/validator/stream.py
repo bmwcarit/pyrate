@@ -14,9 +14,9 @@
 # limitations under the License.
 #
 
-from exception import ParseException
-from validator.base import BaseValidator
-from validator.regex_matcher import RegexMatcher
+from pyrate.exception import ParseException
+from pyrate.validator.base import BaseValidator
+from pyrate.validator.regex_matcher import RegexMatcher
 
 
 class StreamValidator(BaseValidator):

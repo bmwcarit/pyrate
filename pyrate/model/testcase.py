@@ -15,11 +15,11 @@
 #
 
 import datetime
-from exception import ParseException
-from model.common import needs_token
-from model.teststep import TestStep
-from output.terminal import STATUS_SEP
-from util import duration
+from pyrate.exception import ParseException
+from pyrate.model.common import needs_token
+from pyrate.model.teststep import TestStep
+from pyrate.output.terminal import STATUS_SEP
+from pyrate.util import duration
 
 
 def create_step(yaml_tree, name, shared_steps):

@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-from exception import ParseException
+from pyrate.exception import ParseException
 
 KEY = 'env'
 

@@ -14,9 +14,9 @@
 # limitations under the License.
 #
 
-from exception import ParseException
-from output.terminal import print_expectation
-from validator.base import BaseValidator
+from pyrate.exception import ParseException
+from pyrate.output.terminal import print_expectation
+from pyrate.validator.base import BaseValidator
 
 
 class ExitCodeValidator(BaseValidator):

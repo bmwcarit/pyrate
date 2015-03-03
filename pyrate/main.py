@@ -22,12 +22,12 @@ import argparse
 
 import yaml
 
-from exception import ParseException
-from model import env
-from model.testcase import TestCase
-from model.teststep import TestStep
-from output.terminal import *
-from util import duration
+from pyrate.exception import ParseException
+from pyrate.model import env
+from pyrate.model.testcase import TestCase
+from pyrate.model.teststep import TestStep
+from pyrate.output.terminal import *
+from pyrate.util import duration
 
 
 __version__ = "0.1"

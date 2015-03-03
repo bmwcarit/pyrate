@@ -23,7 +23,6 @@ setup(name='pyrate',
       author='Tobias Henkel',
       author_email='tobias.henkel@bmw-carit.de',
       packages=['pyrate'],
-      package_dir={'pyrate': 'src'},
       license='Apache2',
       scripts=['tools/pyrate'],
       install_requires=[

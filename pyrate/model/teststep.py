@@ -23,12 +23,12 @@ from subprocess import Popen, PIPE
 
 import psutil
 
-from exception import ParseException
-from model.common import needs_token
-from output.terminal import STATUS_RUN, STATUS_OK, STATUS_FAILED
-from util import duration
-from validator.exitcode import ExitCodeValidator
-from validator.stream import StreamValidator
+from pyrate.exception import ParseException
+from pyrate.model.common import needs_token
+from pyrate.output.terminal import STATUS_RUN, STATUS_OK, STATUS_FAILED
+from pyrate.util import duration
+from pyrate.validator.exitcode import ExitCodeValidator
+from pyrate.validator.stream import StreamValidator
 
 
 class TestStep:

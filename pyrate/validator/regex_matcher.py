@@ -16,8 +16,8 @@
 
 import re
 
-from exception import ParseException
-from output.terminal import print_expectation
+from pyrate.exception import ParseException
+from pyrate.output.terminal import print_expectation
 
 
 class RegexMatcher:
