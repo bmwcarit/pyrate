@@ -37,6 +37,16 @@
     # so lets check for it
     - contains: bar
 
+- teststep:
+    name: recursive_variables
+    command: "echo {var}"
+    stdout:
+    # {var} should resolve to /opt/backup/foo
+    - contains: /opt/backup/foo
+
+    # also the check should resolve correctly
+    - contains: "^{var}$"
+
 - testcase:
     name: first
     fatal: true
@@ -85,3 +95,9 @@
         - contains: '^bar$'
         - notcontains: 'bl[ua]bb'
         - notcontains: 'bl[ua]bb'
+
+- testcase:
+    name: recursive variables
+    steps:
+    - recursive_variables:
+        var: "{GLOBAL_FOO}/foo"

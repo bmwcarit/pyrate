@@ -22,6 +22,21 @@ def duration(start):
     return diff.total_seconds() * 1000
 
 
+def resolveVariables(string, vars, depth = 0):
+    new = string.format_map(DefaultVariableDict(**vars))
+
+    # recursively resolve variables if the string has been changed
+    if string == new:
+        # nothing changed
+        return new
+
+    # limit the depth to 10 in order to inhibit an infinite recursion
+    if depth < 10:
+        return resolveVariables(new, vars, depth + 1)
+
+    return new
+
+
 class DefaultVariableDict(dict):
     def __missing__(self, key):
         return '{%s}' % key

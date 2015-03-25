@@ -26,7 +26,7 @@ import psutil
 from pyrate.exception import ParseException
 from pyrate.model.common import needs_token
 from pyrate.output.terminal import STATUS_RUN, STATUS_OK, STATUS_FAILED
-from pyrate.util import duration, DefaultVariableDict
+from pyrate.util import duration, resolveVariables
 from pyrate.validator.exitcode import ExitCodeValidator
 from pyrate.validator.stream import StreamValidator
 from pyrate.model.env import parse_env
@@ -121,8 +121,7 @@ class TestStep:
         for key, value in self.arguments.items():
             used_variables[key] = value
 
-        command = self.command.format_map(
-            DefaultVariableDict(**used_variables))
+        command = resolveVariables(self.command, used_variables)
 
         process = Popen(command, stdout=PIPE, stderr=PIPE, shell=True)
 
