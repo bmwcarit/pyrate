@@ -33,16 +33,16 @@
     - contains: '{PARAM1}'
     - contains: '{PARAM2}'
 
-    # in this example this test step gets called with a param foo,
+    # in this example this test step gets called with a param bar,
     # so lets check for it
-    - contains: foo
+    - contains: bar
 
 - testcase:
     name: first
     fatal: true
     steps:
     - foostep:
-        PARAM1: fo
+        PARAM1: foo
         PARAM2: bar
     - foostep:
         PARAM1: bar
