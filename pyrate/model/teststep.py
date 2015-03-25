@@ -146,8 +146,12 @@ class TestStep:
             if not validator.validate(exitcode,
                                       stdout.decode("utf-8"),
                                       stderr.decode("utf-8"),
-                                      used_variables):
+                                      used_variables,
+                                      command):
                 success = False
+
+                # don't print command on further validators
+                command = None
 
         return success
 

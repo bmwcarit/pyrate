@@ -45,7 +45,7 @@ class RegexMatcher:
         else:
             raise ParseException("stream validator must be string or list")
 
-    def validate(self, stream, type, variables):
+    def validate(self, stream, type, variables, command):
 
         pattern = resolveVariables(self.pattern, variables)
 
@@ -56,12 +56,12 @@ class RegexMatcher:
             if result is not None:
                 # found a match
                 print_expectation("%s does not contain" %
-                                  type, pattern, stream)
+                                  type, pattern, stream, command)
                 return False
         else:
             if result is None:
                 # found no match but expected one
-                print_expectation("%s contains" % type, pattern, stream)
+                print_expectation("%s contains" % type, pattern, stream, command)
                 return False
 
         return True

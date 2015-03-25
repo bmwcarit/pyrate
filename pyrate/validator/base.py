@@ -19,6 +19,6 @@ import sys
 
 class BaseValidator:
 
-    def validate(self, exitcode, stdout, stderr, variables):
+    def validate(self, exitcode, stdout, stderr, variables, command):
         print("Base method not implemented", file=sys.stderr)
         return False

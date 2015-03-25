@@ -40,7 +40,7 @@ class ExitCodeValidator(BaseValidator):
                 # TODO has to be parsed
                 self.code = 234234
 
-    def validate(self, exitcode, stdout, stderr, variables):
+    def validate(self, exitcode, stdout, stderr, variables, command):
         valid = exitcode == self.code
         if self.negate:
             valid = not valid
@@ -48,6 +48,6 @@ class ExitCodeValidator(BaseValidator):
         if not valid:
             prefix = 'not ' if self.negate else ''
             expectation = "%s%s" % (prefix, self.code)
-            print_expectation("exit status", expectation, "%d" % exitcode)
+            print_expectation("exit status", expectation, "%d" % exitcode, command)
 
         return valid

@@ -24,7 +24,11 @@ STATUS_PASSED = colored('[  PASSED  ]', 'green')
 STATUS_FAILED = colored('[  FAILED  ]', 'red')
 
 
-def print_expectation(type, expected, found):
+def print_expectation(type, expected, found, command=None):
+
+    if command is not None:
+        print(colored("\n\tCommand:", attrs=['bold']))
+        print("\t%s\n" % command)
 
     print(colored("\n\tExpected (%s):" % type, attrs=['bold']))
     for line in expected.splitlines():
