@@ -35,6 +35,7 @@ from pyrate.model.env import parse_env
 class TestStep:
     KEY = 'teststep'
     KEY_NAME = 'name'
+    KEY_MESSAGE = 'message'
     KEY_COMMAND = 'command'
     KEY_EXIT = 'exit'
     KEY_STDOUT = 'stdout'
@@ -45,6 +46,7 @@ class TestStep:
     def __init__(self, yaml_tree):
         # default values
         self.name = None
+        self.message = None
         self.command = None
         self.fatal = False
         self.timeout = 0
@@ -58,6 +60,8 @@ class TestStep:
         for key, value in yaml_tree.items():
             if key == self.KEY_NAME:
                 self.name = value
+            elif key == self.KEY_MESSAGE:
+                self.message = value
             elif key == self.KEY_COMMAND:
                 self.command = value
             elif key == self.KEY_EXIT:
@@ -113,15 +117,7 @@ class TestStep:
             pass
 
     def execute(self, variables):
-        # merge global and step variables
-        # step variables take precedence
-        used_variables = {}
-        for key, value in variables.items():
-            used_variables[key] = value
-        for key, value in self.arguments.items():
-            used_variables[key] = value
-
-        command = resolveVariables(self.command, used_variables)
+        command = resolveVariables(self.command, variables)
 
         process = Popen(command, stdout=PIPE, stderr=PIPE, shell=True)
 
@@ -146,7 +142,7 @@ class TestStep:
             if not validator.validate(exitcode,
                                       stdout.decode("utf-8"),
                                       stderr.decode("utf-8"),
-                                      used_variables,
+                                      variables,
                                       command):
                 success = False
 
@@ -159,14 +155,29 @@ class TestStep:
         self.executed = True
         start = datetime.datetime.now()
 
-        print("%s %s: %s" % (STATUS_RUN, testcase.name, self.name))
+        # merge global and step variables
+        # step variables take precedence
+        used_variables = {}
+        for key, value in variables.items():
+            used_variables[key] = value
+        for key, value in self.arguments.items():
+            used_variables[key] = value
+
+
+        description = self.message
+        if description is None:
+            description = self.name
+
+        description = resolveVariables(description, used_variables)
+
+        print("%s %s: %s" % (STATUS_RUN, testcase.name, description))
 
         status = STATUS_OK
-        if not self.execute(variables):
+        if not self.execute(used_variables):
             status = STATUS_FAILED
             self.failed = True
 
         print("%s %s: %s (%d ms)" %
-              (status, testcase.name, self.name, duration(start)))
+              (status, testcase.name, description, duration(start)))
 
         return not (self.failed and self.fatal)

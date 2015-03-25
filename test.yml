@@ -39,6 +39,7 @@
 
 - teststep:
     name: recursive_variables
+    message: check recursive variable {var}
     command: "echo {var}"
     stdout:
     # {var} should resolve to /opt/backup/foo
