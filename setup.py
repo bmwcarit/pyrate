@@ -18,7 +18,7 @@
 from setuptools import setup
 
 setup(name='pyrate',
-      version='0.1',
+      version='0.1.1',
       description='Shell-based testing framework',
       author='Tobias Henkel',
       author_email='tobias.henkel@bmw-carit.de',
